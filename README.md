@@ -48,4 +48,4 @@ El proyecto sigue una estructura de paquetes bien definida, organizada en capas 
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/nombre-repositorio.git
+   git clone https://github.com/SebastianARG/Practica2Evaluable.git
