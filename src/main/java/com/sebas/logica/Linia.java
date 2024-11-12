@@ -10,12 +10,12 @@ public class Linia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name="producto_id", nullable = false)
-    private Producte producte = new Producte();
+    @JoinColumn(name="producte", nullable = false)
+    private Producte producte;
     private int quantitat;
     @ManyToOne
-    @JoinColumn(name="factura_id", nullable = false)
-    private Factura factura = new Factura();
+    @JoinColumn(name="factura", nullable = false)
+    private Factura factura;
 
     // constructors necessaris
 
