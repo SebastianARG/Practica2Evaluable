@@ -16,6 +16,7 @@
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
       <!-- Comentar esta línea si se usa hbm2ddl.auto -->
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+
       <!-- Solo esta para la generación automática de esquema en Hibernate -->
       <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
       <!-- Otras propiedades opcionales para depuración -->

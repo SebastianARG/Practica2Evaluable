@@ -7,7 +7,7 @@ import com.sebas.persistencia.exceptions.ClientException;
 public class Main {
     public static void main(String[] args) {
         ClientDAOImpl cl = new ClientDAOImpl();
-        Client client = new Client("123","Sebas");
+        Client client = new Client("X1234567A","JOSE");
 //        System.out.println("Clientes");
 //        try {
 //            for (Client c: cl.findAll()){
@@ -23,6 +23,11 @@ public class Main {
             cl.add(client);
         } catch (ClientException e) {
             System.out.println("Error: "+e.getMessage());
+        }
+        try {
+            System.out.println(cl.findByDni("X1234567A"));
+        } catch (ClientException e) {
+            System.out.println(e.getMessage());
         }
         System.out.println("--------------------");
 //        System.out.println("Obtenemos por id");

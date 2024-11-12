@@ -35,6 +35,16 @@ public class ClientDAOImpl implements ClientDAO {
         }
 
     }
+    public Client findByDni(String dni) throws ClientException {
+        try {
+            TypedQuery<Client> query = em.createQuery("SELECT c FROM Client c WHERE c.nif = :dni", Client.class);
+            query.setParameter("dni", dni);
+            return query.getSingleResult(); // Puedes usar getResultList() si esperas múltiples resultados
+        } catch (Exception e) {
+            throw new ClientException("Error al buscar el Cliente por DNI: " + e.getMessage());
+        }
+    }
+
 
     @Override
     public List<Client> findAll() throws ClientException {
