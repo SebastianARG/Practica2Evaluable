@@ -4,6 +4,7 @@ import com.sebas.logica.Client;
 import com.sebas.logica.Producte;
 import com.sebas.persistencia.Config.Config;
 import com.sebas.persistencia.dao.ProducteDAO;
+import com.sebas.persistencia.exceptions.ClientException;
 import com.sebas.persistencia.exceptions.ProducteException;
 
 import javax.persistence.EntityManager;
@@ -32,6 +33,15 @@ public class ProducteDAOImpl implements ProducteDAO {
             throw new ProducteException("Error al agregar el producto: " + e.getMessage());
         }
 
+    }
+    public Producte findByName(String name) throws ProducteException {
+        try {
+            TypedQuery<Producte> query = em.createQuery("SELECT p FROM Producte p WHERE p.nom = :nom", Producte.class);
+            query.setParameter("nom", name);
+            return query.getSingleResult(); // Puedes usar getResultList() si esperas múltiples resultados
+        } catch (Exception e) {
+            throw new ProducteException("Error al buscar el Producte por DNI: " + e.getMessage());
+        }
     }
 
     @Override
