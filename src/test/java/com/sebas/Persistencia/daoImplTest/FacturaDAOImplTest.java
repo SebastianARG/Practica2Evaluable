@@ -8,6 +8,7 @@ import com.sebas.logica.Client;
 import com.sebas.logica.Factura;
 import com.sebas.persistencia.daoImpl.ClientDAOImpl;
 import com.sebas.persistencia.daoImpl.FacturaDAOImpl;
+import com.sebas.persistencia.daoImpl.LiniaDAOImpl;
 import com.sebas.persistencia.exceptions.ClientException;
 import com.sebas.persistencia.exceptions.FacturaException;
 import com.sebas.persistencia.exceptions.ProducteException;
@@ -29,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FacturaDAOImplTest {
 
     FacturaDAOImpl dao;
-    ClientDAOImpl cDao;
+    LiniaDAOImpl ldao;
     static Factura f;
     static Client c;
     public FacturaDAOImplTest() {
@@ -46,11 +47,11 @@ public class FacturaDAOImplTest {
 
     @BeforeEach
     public void setUp() throws FacturaException {
-        dao = new FacturaDAOImpl();
-        cDao = new ClientDAOImpl();
+        ldao = new LiniaDAOImpl();
+        dao = new FacturaDAOImpl(ldao);
         c =new Client("2", "jose");
         assertDoesNotThrow(() ->{
-            f  = new Factura(new Date(2005,1,16),c);
+            f  = new Factura(new Date(System.currentTimeMillis()),c);
         });
 
     }
@@ -65,7 +66,6 @@ public class FacturaDAOImplTest {
     public void TestAdd() throws ProducteException, ClientException {
         assertDoesNotThrow(() -> {
            dao.add(f);
-           cDao.add(c);
         });
     }
 

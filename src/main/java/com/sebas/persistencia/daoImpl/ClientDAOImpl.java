@@ -29,6 +29,7 @@ public class ClientDAOImpl implements ClientDAO {
             transaction.begin();
             em.persist(client);
             transaction.commit();
+            //flush();
         } catch (Exception e) {
             if (transaction.isActive()) transaction.rollback();
             throw new ClientException("Error al agregar el cliente: " + e.getMessage());
@@ -63,6 +64,7 @@ public class ClientDAOImpl implements ClientDAO {
             transaction.begin();
             em.merge(client);
             transaction.commit();
+            //flush();
         } catch (Exception e) {
             if (transaction.isActive()) transaction.rollback();
             throw new ClientException("Error al actualizar el cliente: " + e.getMessage());
@@ -87,6 +89,7 @@ public class ClientDAOImpl implements ClientDAO {
             if (c != null) {
                 em.remove(c);
             }
+            //flush();
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) transaction.rollback();

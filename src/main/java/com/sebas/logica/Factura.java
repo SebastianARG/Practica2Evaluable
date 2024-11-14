@@ -14,7 +14,7 @@ public class Factura {
     private long id;
     private Date data;
     @ManyToOne
-    @JoinColumn(name="client_id", nullable = false)
+    @JoinColumn(name="client_id", nullable = true)
     private Client client;
     @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Linia> linies;

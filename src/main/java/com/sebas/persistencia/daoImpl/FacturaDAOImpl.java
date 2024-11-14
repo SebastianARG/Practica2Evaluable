@@ -22,67 +22,71 @@ public class FacturaDAOImpl implements FacturaDAO {
 
 
     // factura tiene date, client, lineas(hash)
-    public FacturaDAOImpl() {
+    public FacturaDAOImpl(LiniaDAOImpl lDao) {
 
         this.em = Config.getEntityManager();
         cDao = new ClientDAOImpl();
-        lDao = new LiniaDAOImpl();
+        this.lDao = lDao;
     }
 
     @Override
     public void add(Factura factura) throws FacturaException {
         EntityTransaction transaction = em.getTransaction();
-        Factura f = findById(factura.getId());
-        if (f != null) {
+        System.out.println("Verificamos si existe");
+        if ((factura.getId() > 0) && find(factura)) {
             throw new FacturaException("Factura ya existe");
-        }
-        try {
-            cDao.find(factura.getClient().getId());
-        } catch (ClientException e) {
+        } else {
+            System.out.println("buscamos cliente si existe");
             try {
-                cDao.add(factura.getClient());
-
-            } catch (ClientException ex) {
-                throw new FacturaException("Cliente no ha podido ser added: " + ex.getMessage());
-            }
-        }
-
-        try {
-            List<Linia> linias = lDao.findLiniesFactura(factura.getId());
-            if (linias == null) {
-                for (Linia l : factura.getLinies()) {
-                    lDao.add(l, factura.getId());
-                }
-            }
-
-        } catch (LiniaException e) {
-            throw new FacturaException("Factura no encontrada: " + e.getMessage());
-        }
-
-        try{
-            transaction.begin();
-            em.persist(factura);
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction.isActive()) transaction.rollback();
-            try {
-                List<Linia> linias = lDao.findLiniesFactura(factura.getId());
-                if(!linias.isEmpty()){
-                    for(Linia l : linias){
-                        lDao.delete(l, factura.getId());
+                Client c = cDao.find(factura.getClient().getId());
+                if(c == null) {
+                    System.out.println("no existe cliente lo creamos");
+                    try {
+                        cDao.add(factura.getClient());
+                    } catch (ClientException ex) {
+                        throw new FacturaException("Cliente no ha podido ser added: " + ex.getMessage());
                     }
                 }
-            } catch (LiniaException ex) {
-                throw new FacturaException("error al borrar las lineas creadas, hazlo manual: "+ ex.getMessage());
-            }
-            try {
-                cDao.delete(factura.getClient());
-            } catch (ClientException ex) {
-                throw new FacturaException("Cliente no ha podido ser deletado, hazlo manual:" + ex.getMessage());
-            }
-            throw new FacturaException("Factura no encontrada: " + e.getMessage());
-        }
+            } catch (ClientException e) {
 
+            }
+            System.out.println("Empezamos la transaccion");
+            try {
+                transaction.begin();
+                System.out.println("Persistimos facy");
+                em.persist(factura);
+                System.out.println("flush");
+                //transaction.commit();
+                flush();
+            } catch (Exception e) {
+                if (transaction.isActive()) transaction.rollback();
+                try {
+                    cDao.delete(factura.getClient());
+                } catch (ClientException ex) {
+                    throw new FacturaException("Cliente no ha podido ser deletado, hazlo manual:" + ex.getMessage());
+                }
+            }
+
+            System.out.println("Añadimos las lineas si esta persistido al factura");
+            try{
+                if(findById(factura.getId()) != null) {
+                    System.out.println("den");
+                    try {
+                        var cont = 0;
+                        for (Linia l : factura.getLinies()) {
+                            cont++;
+                            System.out.println("añadimos: "+cont);
+                            lDao.add(l, factura.getId());
+                        }
+                    } catch (LiniaException e) {
+                        throw new FacturaException("Lineas no añadidas a factura: " + e.getMessage());
+                    }
+                }
+            } catch (Exception e) {
+                throw new FacturaException("Error added lineas");
+            }
+
+        }
     }
 
     @Override
@@ -101,7 +105,7 @@ public class FacturaDAOImpl implements FacturaDAO {
             query.setParameter("id", id);
             return query.getSingleResult();
         } catch (Exception e) {
-            throw new FacturaException("Error al buscar la Factura por ID: " + e.getMessage());
+            return null;
         }
     }
 

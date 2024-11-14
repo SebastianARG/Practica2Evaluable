@@ -21,7 +21,7 @@ public class LiniaDAOImpl implements LiniaDAO {
 
     public LiniaDAOImpl() {
         this.em = Config.getEntityManager();
-        f = new FacturaDAOImpl();
+        f = new FacturaDAOImpl(this);
     }
 
     @Override
@@ -32,7 +32,9 @@ public class LiniaDAOImpl implements LiniaDAO {
             fac = f.findById(idFactura);
             if(fac != null) {
                 transaction.begin();
+                //linia.setFactura(fac);
                 em.persist(linia);
+
                 transaction.commit();
             }else{
                 throw new LiniaException("Factura no encontrada");
