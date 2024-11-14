@@ -32,7 +32,9 @@ public class Factura {
 
     public Factura(Date data) {
         this.data = data;
-        this.linies = new HashSet<>();
+        this.linies =  new HashSet<>();
+        //Producte, cantidad, factura
+        this.linies.add(new Linia());
     }
     // gets-sets
 
@@ -64,7 +66,10 @@ public class Factura {
         this.linies = linies;
     }
 
-    //hashcode, equals, toString
+    public long getId() {
+        return id;
+    }
+//hashcode, equals, toString
 
     @Override
     public boolean equals(Object o) {

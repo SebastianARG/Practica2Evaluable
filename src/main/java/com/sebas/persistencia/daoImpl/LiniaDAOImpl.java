@@ -27,10 +27,16 @@ public class LiniaDAOImpl implements LiniaDAO {
     @Override
     public void add(Linia linia, Long idFactura) throws LiniaException {
         EntityTransaction transaction = em.getTransaction();
+        Factura fac = null;
         try {
-            transaction.begin();
-            em.persist(linia);
-            transaction.commit();
+            fac = f.findById(idFactura);
+            if(fac != null) {
+                transaction.begin();
+                em.persist(linia);
+                transaction.commit();
+            }else{
+                throw new LiniaException("Factura no encontrada");
+            }
         } catch (Exception e) {
             if (transaction.isActive()) transaction.rollback();
             throw new LiniaException("Error al agregar la linia: " + e.getMessage());
@@ -51,14 +57,15 @@ public class LiniaDAOImpl implements LiniaDAO {
     @Override
     public boolean update(Linia linia, Long idFactura)throws LiniaException {
         try {
-            // Buscamos la Factura por ID
-            Factura factura = em.find(Factura.class, idFactura);
-            if (factura == null) {
+
+            Factura fact = null;
+            fact = f.findById(idFactura);
+            if (fact == null) {
                 throw new LiniaException("Factura con ID " + idFactura + " no encontrada.");
             }
 
             // Verificamos si la línea existe en la factura
-            if (!factura.getLinies().contains(linia)) {
+            if (!fact.getLinies().contains(linia)) {
                 throw new LiniaException("Línea no encontrada en la factura con ID " + idFactura);
             }
 
@@ -74,13 +81,14 @@ public class LiniaDAOImpl implements LiniaDAO {
     public boolean find(Linia linia, Long idFactura) throws LiniaException{
         try {
             // Buscamos la Factura por ID
-            Factura factura = em.find(Factura.class, idFactura);
-            if (factura == null) {
+            Factura fact = null;
+            fact = f.findById(idFactura);
+            if (fact == null) {
                 throw new LiniaException("Factura con ID " + idFactura + " no encontrada.");
             }
 
             // Buscamos si la línea está en el conjunto de líneas de la factura
-            return factura.getLinies().contains(linia);
+            return fact.getLinies().contains(linia);
         } catch (Exception e) {
             throw new LiniaException("Error al buscar la línea en la factura: " + e.getMessage(), e);
         }
@@ -90,18 +98,19 @@ public class LiniaDAOImpl implements LiniaDAO {
     public boolean delete(Linia linia, Long idFactura) throws LiniaException {
         try {
             // Buscamos la Factura por ID
-            Factura factura = em.find(Factura.class, idFactura);
-            if (factura == null) {
+            Factura fact = null;
+            fact = f.findById(idFactura);
+            if (fact == null) {
                 throw new LiniaException("Factura con ID " + idFactura + " no encontrada.");
             }
 
             // Verificamos si la línea existe en la factura
-            if (!factura.getLinies().contains(linia)) {
+            if (!fact.getLinies().contains(linia)) {
                 throw new LiniaException("Línea no encontrada en la factura con ID " + idFactura);
             }
 
             // Removemos la línea de la factura y de la base de datos
-            factura.getLinies().remove(linia);
+            fact.getLinies().remove(linia);
             em.remove(em.contains(linia) ? linia : em.merge(linia));
             return true;
         } catch (Exception e) {

@@ -58,9 +58,7 @@ public class ProducteDAOImplTest {
 
         assertDoesNotThrow(() -> {
             //Producte p = new Producte("Queso azul", 2.30);//Vemos que crear
-            assertDoesNotThrow(() -> {
                 dao.add(p);
-            });
         });
 
 
@@ -77,7 +75,7 @@ public class ProducteDAOImplTest {
 
     @Order(3)
     @Test
-    public void testUpdateClient() throws ClientException {
+    public void testUpdateClient() throws ProducteException {
         assertDoesNotThrow(() -> {
             p.setNom("Queso azul");
             dao.update(p);

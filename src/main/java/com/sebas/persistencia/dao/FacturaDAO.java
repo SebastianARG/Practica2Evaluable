@@ -11,7 +11,7 @@ public interface FacturaDAO {
     Factura findById(long id)throws FacturaException;
     boolean update(Factura factura)throws FacturaException;
     boolean find(Factura factura)throws FacturaException;
-    boolean delete(Factura factura)throws FacturaException;
+    void delete(Factura factura)throws FacturaException;
     List<Factura> findByDni(String ClientDni)throws FacturaException;
     void flush();
 }

@@ -4,39 +4,116 @@
  */
 package com.sebas.Persistencia.daoImplTest;
 
+import com.sebas.logica.Factura;
+import com.sebas.logica.Linia;
+import com.sebas.logica.Producte;
+import com.sebas.persistencia.daoImpl.LiniaDAOImpl;
+import com.sebas.persistencia.daoImpl.ProducteDAOImpl;
+import com.sebas.persistencia.exceptions.LiniaException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author sebas
  */
 public class LiniaDAOImplTest {
-    
+    private LiniaDAOImpl dao;
+    private ProducteDAOImpl pDao;
+    private static Linia linia;
+    private static Factura factura;
+    private static Producte producte;
+
     public LiniaDAOImplTest() {
     }
-    
-    @BeforeClass
+
+    @BeforeAll
     public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
+        factura = new Factura(); // Aquí configuras tu objeto de prueba Factura
+        factura.setId(1L); // Asigna un ID existente para simular pruebas
+
+        producte = new Producte("Producto Test",15);
+        producte.setId(1L); // Supón que es un ID existente
+
+        linia = new Linia();
+        linia.setQuantitat(10);
+        linia.setFactura(factura);
+        linia.setProducte(producte);
     }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+    @AfterAll
+    public static void tearDownClass() {
+        // Cleanup if necessary
+    }
+
+    @BeforeEach
+    public void setUp() {
+        dao = new LiniaDAOImpl();
+        pDao =  new ProducteDAOImpl();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // Cleanup if necessary
+    }
+
+    @Order(1)
+    @Test
+    public void testAdd() {
+        assertDoesNotThrow(() -> {
+            dao.add(linia, factura.getId());
+        });
+    }
+
+    @Order(2)
+    @Test
+    public void testFindAll() throws LiniaException {
+        List<Linia> all = dao.findAll();
+        assertNotNull(all);
+        assertFalse(all.isEmpty());
+    }
+
+    @Order(3)
+    @Test
+    public void testUpdate() throws LiniaException {
+        assertDoesNotThrow(() -> {
+            linia.setQuantitat(20);
+            boolean updated = dao.update(linia, factura.getId());
+            assertTrue(updated);
+            assertEquals(20, linia.getQuantitat());
+        });
+    }
+
+    @Order(4)
+    @Test
+    public void testFind() throws LiniaException {
+        boolean found = dao.find(linia, factura.getId());
+        assertTrue(found);
+    }
+
+    @Order(5)
+    @Test
+    public void testDelete() throws LiniaException {
+        assertDoesNotThrow(() -> {
+            boolean deleted = dao.delete(linia, factura.getId());
+            assertTrue(deleted);
+        });
+    }
+
+    @Order(6)
+    @Test
+    public void testFindLiniesFactura() throws LiniaException {
+        List<Linia> linies = dao.findLiniesFactura(factura.getId());
+        assertNotNull(linies);
+        assertFalse(linies.isEmpty());
+    }
 }
