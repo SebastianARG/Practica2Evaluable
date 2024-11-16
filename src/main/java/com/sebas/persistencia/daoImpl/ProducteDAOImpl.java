@@ -22,7 +22,7 @@ public class ProducteDAOImpl implements ProducteDAO {
 
 
     @Override
-    public void add(Producte producto) throws ProducteException{
+    public void add(Producte producto){
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -34,7 +34,7 @@ public class ProducteDAOImpl implements ProducteDAO {
         }
 
     }
-    public Producte findByName(String name) throws ProducteException {
+    public Producte findByName(String name) {
         try {
             TypedQuery<Producte> query = em.createQuery("SELECT p FROM Producte p WHERE p.nom = :nom", Producte.class);
             query.setParameter("nom", name);
@@ -45,7 +45,7 @@ public class ProducteDAOImpl implements ProducteDAO {
     }
 
     @Override
-    public List<Producte> findAll()  throws ProducteException {
+    public List<Producte> findAll() {
         try {
             TypedQuery<Producte> query = em.createQuery("SELECT p FROM Producte p", Producte.class);
             return query.getResultList();
@@ -55,7 +55,7 @@ public class ProducteDAOImpl implements ProducteDAO {
     }
 
     @Override
-    public void update(Producte producto)  throws ProducteException {
+    public void update(Producte producto)  {
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -68,7 +68,7 @@ public class ProducteDAOImpl implements ProducteDAO {
     }
 
     @Override
-    public Producte find(long id)  throws ProducteException {
+    public Producte find(long id) {
         try {
             return em.find(Producte.class, id);
         } catch (Exception e) {
@@ -77,7 +77,7 @@ public class ProducteDAOImpl implements ProducteDAO {
     }
 
     @Override
-    public void delete(Producte producto)   throws ProducteException{
+    public void delete(Producte producto) {
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -101,7 +101,7 @@ public class ProducteDAOImpl implements ProducteDAO {
      * @throws ProducteException
      */
     @Override
-    public List<Producte> findByDni(String ClientDni)  throws ProducteException{
+    public List<Producte> findByDni(String ClientDni){
         return List.of();
     }
     @Override

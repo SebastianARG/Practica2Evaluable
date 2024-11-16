@@ -1,6 +1,6 @@
 package com.sebas.persistencia.exceptions;
 
-public class FacturaException extends Exception {
+public class FacturaException extends RuntimeException {
     public FacturaException(String message) {
         super(message);
     }

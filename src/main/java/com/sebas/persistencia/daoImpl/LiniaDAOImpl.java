@@ -25,20 +25,20 @@ public class LiniaDAOImpl implements LiniaDAO {
     }
 
     @Override
-    public void add(Linia linia, Long idFactura) throws LiniaException {
+    public void add(Linia linia, Long idFactura){
         EntityTransaction transaction = em.getTransaction();
         Factura fac = null;
         try {
             fac = f.findById(idFactura);
-            if(fac != null) {
-                transaction.begin();
-                //linia.setFactura(fac);
-                em.persist(linia);
-
-                transaction.commit();
-            }else{
+            if(fac == null) {
                 throw new LiniaException("Factura no encontrada");
             }
+            transaction.begin();
+            linia.setFactura(fac); // Asegura la relación
+            fac.getLinies().add(linia); // Mantén la relación bidireccional
+            em.persist(linia);
+            transaction.commit();
+            System.out.println(linia);
         } catch (Exception e) {
             if (transaction.isActive()) transaction.rollback();
             throw new LiniaException("Error al agregar la linia: " + e.getMessage());
@@ -47,32 +47,36 @@ public class LiniaDAOImpl implements LiniaDAO {
     }
 
     @Override
-    public List<Linia> findAll() throws LiniaException{
+    public List<Linia> findAll(){
         try {
-            TypedQuery<Linia> query = em.createQuery("SELECT c FROM Linia c", Linia.class);
-            return query.getResultList();
+            return em.createQuery("SELECT l FROM Linia l", Linia.class).getResultList();
         } catch (Exception e) {
             throw new LiniaException("Error al buscar todos las linias: " + e.getMessage());
         }
     }
 
     @Override
-    public boolean update(Linia linia, Long idFactura)throws LiniaException {
+    public boolean update(Linia linia, Long idFactura){
+        EntityTransaction transaction = em.getTransaction();
+        Factura fact = null;
         try {
-
-            Factura fact = null;
-            fact = f.findById(idFactura);
-            if (fact == null) {
-                throw new LiniaException("Factura con ID " + idFactura + " no encontrada.");
+            transaction.begin();
+            // Verificar si la línea existe
+            Linia existingLinia = em.find(Linia.class, linia.getId());
+            if (existingLinia == null) {
+                return false;
             }
+            // Actualizar propiedades de la línea
+            existingLinia.setQuantitat(linia.getQuantitat());
+            existingLinia.setProducte(linia.getProducte());
 
-            // Verificamos si la línea existe en la factura
-            if (!fact.getLinies().contains(linia)) {
-                throw new LiniaException("Línea no encontrada en la factura con ID " + idFactura);
+            // Si es necesario, actualizar la relación con la factura
+            fact = em.find(Factura.class, idFactura);
+            if (fact != null) {
+                existingLinia.setFactura(fact);
             }
-
-            // Realizamos la actualización
-            em.merge(linia);
+            em.merge(existingLinia);
+            transaction.commit();
             return true;
         } catch (Exception e) {
             throw new LiniaException("Error al actualizar la línea en la factura: " + e.getMessage(), e);
@@ -80,40 +84,33 @@ public class LiniaDAOImpl implements LiniaDAO {
     }
 
     @Override
-    public boolean find(Linia linia, Long idFactura) throws LiniaException{
+    public boolean find(Linia linia, Long idFactura){
         try {
-            // Buscamos la Factura por ID
-            Factura fact = null;
-            fact = f.findById(idFactura);
-            if (fact == null) {
-                throw new LiniaException("Factura con ID " + idFactura + " no encontrada.");
-            }
-
-            // Buscamos si la línea está en el conjunto de líneas de la factura
-            return fact.getLinies().contains(linia);
+            Linia result = em.createQuery(
+                            "SELECT l FROM Linia l WHERE l.id = :id AND l.factura.id = :idFactura", Linia.class)
+                    .setParameter("id", linia.getId())
+                    .setParameter("idFactura", idFactura)
+                    .getSingleResult();
+            return result != null;
         } catch (Exception e) {
             throw new LiniaException("Error al buscar la línea en la factura: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public boolean delete(Linia linia, Long idFactura) throws LiniaException {
+    public boolean delete(Linia linia, Long idFactura) {
+        EntityTransaction transaction = em.getTransaction();
         try {
-            // Buscamos la Factura por ID
-            Factura fact = null;
-            fact = f.findById(idFactura);
-            if (fact == null) {
-                throw new LiniaException("Factura con ID " + idFactura + " no encontrada.");
+            transaction.begin();
+
+            // Verificar si la línea existe
+            Linia existingLinia = em.find(Linia.class, linia.getId());
+            if (existingLinia == null) {
+                return false;
             }
 
-            // Verificamos si la línea existe en la factura
-            if (!fact.getLinies().contains(linia)) {
-                throw new LiniaException("Línea no encontrada en la factura con ID " + idFactura);
-            }
-
-            // Removemos la línea de la factura y de la base de datos
-            fact.getLinies().remove(linia);
-            em.remove(em.contains(linia) ? linia : em.merge(linia));
+            em.remove(existingLinia);
+            transaction.commit();
             return true;
         } catch (Exception e) {
             throw new LiniaException("Error al eliminar la línea de la factura: " + e.getMessage(), e);
@@ -121,16 +118,17 @@ public class LiniaDAOImpl implements LiniaDAO {
     }
 
     @Override
-    public List<Linia> findLiniesFactura(Long idFactura) throws LiniaException{
-        try {
-            Factura fac = f.findById(idFactura);
-            if(fac == null) {
-                throw new LiniaException("Factura con ID " + idFactura + " no encontrada.");
+    public List<Linia> findLiniesFactura(Long idFactura){
+
+            try {
+                return em.createQuery(
+                                "SELECT l FROM Linia l WHERE l.factura.id = :idFactura", Linia.class)
+                        .setParameter("idFactura", idFactura)
+                        .getResultList();
+            }catch (Exception e){
+                throw new LiniaException("Error al buscar la factura: " + e.getMessage(), e);
             }
-            return new ArrayList<>(fac.getLinies());
-        } catch (FacturaException e) {
-            throw new LiniaException("Error al buscar las lineas de una factura: "+e.getMessage());
-        }
+
     }
     @Override
     public void flush() {

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit4TestClass.java to edit this template
- */
 package com.sebas.Persistencia.daoImplTest;
 
 import com.sebas.logica.Client;
@@ -11,15 +7,9 @@ import com.sebas.logica.Producte;
 import com.sebas.persistencia.daoImpl.FacturaDAOImpl;
 import com.sebas.persistencia.daoImpl.LiniaDAOImpl;
 import com.sebas.persistencia.daoImpl.ProducteDAOImpl;
-import com.sebas.persistencia.exceptions.FacturaException;
 import com.sebas.persistencia.exceptions.LiniaException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import java.sql.Date;
 import java.util.HashSet;
@@ -28,43 +18,31 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- *
- * @author sebas
- */
+@TestMethodOrder(OrderAnnotation.class)
 public class LiniaDAOImplTest {
+
     private static LiniaDAOImpl dao;
     private static ProducteDAOImpl pDao;
     private static FacturaDAOImpl fDao;
-    private Linia linia;
-    private Factura factura;
-    private Producte producte;
-
-    public LiniaDAOImplTest() {
-    }
+    private static Linia linia;
+    private static Factura factura;
+    private static Producte producte;
 
     @BeforeAll
     public static void setUpClass() {
         dao = new LiniaDAOImpl();
         fDao = new FacturaDAOImpl(dao);
-        pDao =  new ProducteDAOImpl();
-    }
-
-    @AfterAll
-    public static void tearDownClass() {
-        // Cleanup if necessary
-    }
-
-    @BeforeEach
-    public void setUp() {
-        Client c = new Client("1","nombre");
-        factura = new Factura(new Date(System.currentTimeMillis()),c);
+        pDao = new ProducteDAOImpl();
+        Client c = new Client("1", "nombre");
+        factura = new Factura(new Date(System.currentTimeMillis()), c);
         linia = new Linia();
-        assertDoesNotThrow(() ->{
-            producte = new Producte("Producto Test",15);
+
+        assertDoesNotThrow(() -> {
+            producte = new Producte("Producto Test", 15);
             linia.setQuantitat(10);
             linia.setFactura(factura);
             linia.setProducte(producte);
+
             Set<Linia> h = new HashSet<>();
             h.add(linia);
             factura.setLinies(h);
@@ -73,25 +51,20 @@ public class LiniaDAOImplTest {
         });
     }
 
-    @AfterEach
-    public void tearDown() {
-        // Cleanup if necessary
-    }
-
     @Order(1)
     @Test
     public void testAdd() {
-        assertThrows(LiniaException.class, ()->{
+        assertDoesNotThrow(() -> {
             dao.add(linia, factura.getId());
         });
     }
-/*
+
     @Order(2)
     @Test
     public void testFindAll() throws LiniaException {
         List<Linia> all = dao.findAll();
         assertNotNull(all);
-        assertFalse(all.isEmpty());
+        assertFalse(all.isEmpty(), "La lista de líneas no debe estar vacía.");
     }
 
     @Order(3)
@@ -100,8 +73,8 @@ public class LiniaDAOImplTest {
         assertDoesNotThrow(() -> {
             linia.setQuantitat(20);
             boolean updated = dao.update(linia, factura.getId());
-            assertTrue(updated);
-            assertEquals(20, linia.getQuantitat());
+            assertTrue(updated, "La línea debería haberse actualizado correctamente.");
+            assertEquals(20, linia.getQuantitat(), "La cantidad de la línea debería ser 20.");
         });
     }
 
@@ -109,7 +82,7 @@ public class LiniaDAOImplTest {
     @Test
     public void testFind() throws LiniaException {
         boolean found = dao.find(linia, factura.getId());
-        assertTrue(found);
+        assertTrue(found, "La línea debería encontrarse en la factura.");
     }
 
     @Order(5)
@@ -117,7 +90,7 @@ public class LiniaDAOImplTest {
     public void testDelete() throws LiniaException {
         assertDoesNotThrow(() -> {
             boolean deleted = dao.delete(linia, factura.getId());
-            assertTrue(deleted);
+            assertTrue(deleted, "La línea debería haberse eliminado correctamente.");
         });
     }
 
@@ -126,8 +99,6 @@ public class LiniaDAOImplTest {
     public void testFindLiniesFactura() throws LiniaException {
         List<Linia> linies = dao.findLiniesFactura(factura.getId());
         assertNotNull(linies);
-        assertFalse(linies.isEmpty());
+        assertFalse(linies.isEmpty(), "La lista de líneas de la factura no debe estar vacía.");
     }
-
- */
 }

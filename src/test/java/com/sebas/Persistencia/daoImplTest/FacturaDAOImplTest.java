@@ -19,18 +19,20 @@ import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
 
 import java.sql.Date;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author sebas
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FacturaDAOImplTest {
 
-    FacturaDAOImpl dao;
-    LiniaDAOImpl ldao;
+    static FacturaDAOImpl dao;
+    static LiniaDAOImpl ldao;
+    Client client;
     static Factura f;
     static Client c;
     public FacturaDAOImplTest() {
@@ -38,7 +40,12 @@ public class FacturaDAOImplTest {
 
     @BeforeAll
     public static void setUpClass() {
-
+        ldao = new LiniaDAOImpl();
+        dao = new FacturaDAOImpl(ldao);
+        c =new Client("2", "jose");
+        assertDoesNotThrow(() ->{
+            f  = new Factura(new Date(System.currentTimeMillis()),c);
+        });
     }
 
     @AfterAll
@@ -47,12 +54,7 @@ public class FacturaDAOImplTest {
 
     @BeforeEach
     public void setUp() throws FacturaException {
-        ldao = new LiniaDAOImpl();
-        dao = new FacturaDAOImpl(ldao);
-        c =new Client("2", "jose");
-        assertDoesNotThrow(() ->{
-            f  = new Factura(new Date(System.currentTimeMillis()),c);
-        });
+
 
     }
 
@@ -63,19 +65,79 @@ public class FacturaDAOImplTest {
 
     @Test
     @Order(1)
-    public void TestAdd() throws ProducteException, ClientException {
+    public void TestAdd(){
         assertDoesNotThrow(() -> {
            dao.add(f);
+            System.out.println(dao.find(f));
         });
     }
 
 
     @Test
     @Order(2)
-    public void TestFindById() throws ProducteException{
+    public void TestFindById() {
+        //TestAdd();
         assertDoesNotThrow(() -> {
-            //Producte p = new Producte("Queso azul", 2.30);//Vemos que crear
-            dao.findById(f.getId());
+            Factura factura = dao.findById(f.getId());
+            assertTrue(factura != null, "La factura no debería ser null"); // Nueva verificación para comprobar que no sea null
+            System.out.println(f.getId() + " " + (factura != null ? factura.getId() : "Factura no encontrada"));
+        });
+    }
+
+    @Test
+    @Order(3)
+    public void TestFindAll() {
+        //TestAdd();
+        assertDoesNotThrow(() -> {
+           List<Factura> facturas = dao.findAll();
+           assertTrue(!facturas.isEmpty());
+            System.out.println(facturas);
+        });
+    }
+
+    @Test
+    @Order(4)
+    public void TestFindByClient() {
+        //TestAdd();
+        assertDoesNotThrow(() -> {
+           List<Factura> facturas = dao.findByDni(f.getClient().getNif());
+            assertTrue(!facturas.isEmpty());
+            System.out.println(facturas);
+        });
+    }
+    @Test
+    @Order(5)
+    public void TestFind() {
+        //TestAdd();
+        assertDoesNotThrow(() -> {
+            boolean encontrado = dao.find(f);
+            assertTrue(encontrado);
+        });
+    }
+
+    @Test
+    @Order(6)
+    public void TestUpdate() {
+        //TestAdd();
+        assertDoesNotThrow(() -> {
+            f.setData(new Date(System.currentTimeMillis()));
+            boolean actualizado = dao.update(f);
+            assertTrue(actualizado);
+        });
+    }
+
+    @Test
+    @Order(7)
+    public void TestDelete() {
+        //TestAdd();
+        assertDoesNotThrow(() -> {
+            System.out.println("encontrado al boorrar: "+dao.find(f));
+            System.out.println(dao.findById(f.getId()));
+            boolean borrado = dao.delete(f);
+            System.out.println(borrado);
+            assertTrue(borrado);
+//            boolean encontradoBD = dao.find(f);
+//            assertTrue(!encontradoBD);
         });
     }
 

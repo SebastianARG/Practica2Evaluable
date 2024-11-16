@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author sebas
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProducteDAOImplTest {
     private ProducteDAOImpl dao;
     private static Producte p;

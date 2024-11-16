@@ -1,6 +1,6 @@
 package com.sebas.persistencia.exceptions;
 
-public class ProducteException extends Exception{
+public class ProducteException extends RuntimeException{
     public ProducteException() {
     }
 

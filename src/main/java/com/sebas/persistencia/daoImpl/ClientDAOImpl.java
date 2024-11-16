@@ -23,7 +23,7 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
-    public void add(Client client) throws ClientException {
+    public void add(Client client) {
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -36,7 +36,7 @@ public class ClientDAOImpl implements ClientDAO {
         }
 
     }
-    public Client findByDni(String dni) throws ClientException {
+    public Client findByDni(String dni) {
         try {
             TypedQuery<Client> query = em.createQuery("SELECT c FROM Client c WHERE c.nif = :dni", Client.class);
             query.setParameter("dni", dni);
@@ -48,7 +48,7 @@ public class ClientDAOImpl implements ClientDAO {
 
 
     @Override
-    public List<Client> findAll() throws ClientException {
+    public List<Client> findAll() {
         try {
             TypedQuery<Client> query = em.createQuery("SELECT c FROM Client c", Client.class);
             return query.getResultList();
@@ -58,7 +58,7 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
-    public void update(Client client) throws ClientException {
+    public void update(Client client){
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -72,7 +72,7 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
-    public Client find(long id) throws ClientException {
+    public Client find(long id){
         try {
             return em.find(Client.class, id);
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
-    public void delete(Client client) throws ClientException{
+    public void delete(Client client){
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
