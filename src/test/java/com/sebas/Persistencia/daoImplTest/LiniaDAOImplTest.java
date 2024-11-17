@@ -18,46 +18,53 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestMethodOrder(OrderAnnotation.class)
-public class LiniaDAOImplTest {
+    @TestMethodOrder(OrderAnnotation.class)
+    public class LiniaDAOImplTest {
 
-    private static LiniaDAOImpl dao;
-    private static ProducteDAOImpl pDao;
-    private static FacturaDAOImpl fDao;
-    private static Linia linia;
-    private static Factura factura;
-    private static Producte producte;
+        private static LiniaDAOImpl dao;
+        private static ProducteDAOImpl pDao;
+        private static FacturaDAOImpl fDao;
+        private static Linia linia;
+        private static Factura factura;
+        private static Producte producte;
 
-    @BeforeAll
-    public static void setUpClass() {
-        dao = new LiniaDAOImpl();
-        fDao = new FacturaDAOImpl(dao);
-        pDao = new ProducteDAOImpl();
-        Client c = new Client("1", "nombre");
-        factura = new Factura(new Date(System.currentTimeMillis()), c);
-        linia = new Linia();
+        @BeforeAll
+        public static void setUpClass() {
+            dao = new LiniaDAOImpl();
+            fDao = new FacturaDAOImpl(dao);
+            pDao = new ProducteDAOImpl();
+            Client c = new Client("2", "jose");
+            factura = new Factura(new Date(System.currentTimeMillis()), c);
+            linia = new Linia();
 
-        assertDoesNotThrow(() -> {
-            producte = new Producte("Producto Test", 15);
-            linia.setQuantitat(10);
-            linia.setFactura(factura);
-            linia.setProducte(producte);
+            assertDoesNotThrow(() -> {
+                producte = new Producte("Producto Test", 15);
+                linia.setQuantitat(10);
+                linia.setFactura(factura);
+                linia.setProducte(producte);
 
-            Set<Linia> h = new HashSet<>();
-            h.add(linia);
-            factura.setLinies(h);
-            fDao.add(factura);
-            pDao.add(producte);
-        });
-    }
+//                Set<Linia> h = new HashSet<>();
+//                h.add(linia);
+//                factura.setLinies(h);
+                // Guarda la factura
+                fDao.add(factura);
+                //fDao.flush();
+                // Verificar que la factura tiene un ID
+                assertNotNull(factura.getId(), "La Factura debería tener un ID generado");
+                pDao.add(producte);
 
-    @Order(1)
-    @Test
-    public void testAdd() {
-        assertDoesNotThrow(() -> {
-            dao.add(linia, factura.getId());
-        });
-    }
+            });
+        }
+
+
+        @Order(1)
+        @Test
+        public void testAdd() {
+            assertDoesNotThrow(() -> {
+                dao.add(linia, factura.getId());
+                assertTrue(dao.find(linia,factura.getId()));
+            });
+        }
 
     @Order(2)
     @Test

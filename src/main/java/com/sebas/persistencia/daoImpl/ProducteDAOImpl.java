@@ -38,7 +38,7 @@ public class ProducteDAOImpl implements ProducteDAO {
         try {
             TypedQuery<Producte> query = em.createQuery("SELECT p FROM Producte p WHERE p.nom = :nom", Producte.class);
             query.setParameter("nom", name);
-            return query.getSingleResult(); // Puedes usar getResultList() si esperas múltiples resultados
+            return query.getSingleResult();
         } catch (Exception e) {
             throw new ProducteException("Error al buscar el Producte por DNI: " + e.getMessage());
         }
@@ -95,7 +95,7 @@ public class ProducteDAOImpl implements ProducteDAO {
 
 
     /**
-     *
+     * FALTA POR HACER
      * @param ClientDni
      * @return
      * @throws ProducteException

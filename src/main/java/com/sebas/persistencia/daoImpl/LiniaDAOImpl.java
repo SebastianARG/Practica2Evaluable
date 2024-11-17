@@ -25,26 +25,31 @@ public class LiniaDAOImpl implements LiniaDAO {
     }
 
     @Override
-    public void add(Linia linia, Long idFactura){
+    public void add(Linia linia, Long idFactura) {
         EntityTransaction transaction = em.getTransaction();
-        Factura fac = null;
+
         try {
-            fac = f.findById(idFactura);
-            if(fac == null) {
-                throw new LiniaException("Factura no encontrada");
-            }
+            Factura fac = f.findById(idFactura);
+            if (fac == null) throw new LiniaException("Factura no encontrada");
+
+            System.out.println("Factura encontrada: " + fac);
+
             transaction.begin();
-            linia.setFactura(fac); // Asegura la relación
-            fac.getLinies().add(linia); // Mantén la relación bidireccional
+            linia.setFactura(fac);
+            fac.getLinies().add(linia);
+
             em.persist(linia);
             transaction.commit();
-            System.out.println(linia);
+            System.out.println("Linia añadida correctamente: " + linia);
+
         } catch (Exception e) {
             if (transaction.isActive()) transaction.rollback();
+            System.err.println("Error al agregar la linia: " + e.getMessage());
+            e.printStackTrace();
             throw new LiniaException("Error al agregar la linia: " + e.getMessage());
         }
-
     }
+
 
     @Override
     public List<Linia> findAll(){
@@ -61,16 +66,14 @@ public class LiniaDAOImpl implements LiniaDAO {
         Factura fact = null;
         try {
             transaction.begin();
-            // Verificar si la línea existe
+
             Linia existingLinia = em.find(Linia.class, linia.getId());
             if (existingLinia == null) {
                 return false;
             }
-            // Actualizar propiedades de la línea
             existingLinia.setQuantitat(linia.getQuantitat());
             existingLinia.setProducte(linia.getProducte());
 
-            // Si es necesario, actualizar la relación con la factura
             fact = em.find(Factura.class, idFactura);
             if (fact != null) {
                 existingLinia.setFactura(fact);
@@ -103,7 +106,6 @@ public class LiniaDAOImpl implements LiniaDAO {
         try {
             transaction.begin();
 
-            // Verificar si la línea existe
             Linia existingLinia = em.find(Linia.class, linia.getId());
             if (existingLinia == null) {
                 return false;

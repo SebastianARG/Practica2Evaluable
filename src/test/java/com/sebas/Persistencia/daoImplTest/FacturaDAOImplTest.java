@@ -43,9 +43,7 @@ public class FacturaDAOImplTest {
         ldao = new LiniaDAOImpl();
         dao = new FacturaDAOImpl(ldao);
         c =new Client("2", "jose");
-        assertDoesNotThrow(() ->{
-            f  = new Factura(new Date(System.currentTimeMillis()),c);
-        });
+        f  = new Factura(new Date(System.currentTimeMillis()),c);
     }
 
     @AfterAll
@@ -54,8 +52,6 @@ public class FacturaDAOImplTest {
 
     @BeforeEach
     public void setUp() throws FacturaException {
-
-
     }
 
     @AfterEach
@@ -131,7 +127,7 @@ public class FacturaDAOImplTest {
     public void TestDelete() {
         //TestAdd();
         assertDoesNotThrow(() -> {
-            System.out.println("encontrado al boorrar: "+dao.find(f));
+            System.out.println("enco*ntrado al boorrar: "+dao.find(f));
             System.out.println(dao.findById(f.getId()));
             boolean borrado = dao.delete(f);
             System.out.println(borrado);
